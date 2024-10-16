@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Clustering Result</title>
+    <style>
+      img {
+        margin: 10px;
+        max-width: 300px;
+        height: auto;
+      }
+      table {
+        margin-top: 20px;
+        border-collapse: collapse;
+        width: 70%;
+      }
+      table,
+      th,
+      td {
+        border: 1px solid black;
+      }
+      th,
+      td {
+        padding: 10px;
+        text-align: left;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Clustering Result</h1>
+
+    <h2>Original Image</h2>
+    <img src="/{{ original_image }}" alt="Original Image" /><br /><br />
+
+    <h2>Clustered Image</h2>
+    <img src="/{{ clustered_image }}" alt="Clustered Image" /><br /><br />
+
+    <h2>Gradient Images</h2>
+    <h3>Gradien Arah Horizontal</h3>
+    <img src="/{{ edge_x }}" alt="Gradien Arah Horizontal" /><br /><br />
+    <h3>Gradien Arah Vertikal</h3>
+    <img src="/{{ edge_y }}" alt="Gradien Arah Vertikal" /><br /><br />
+
+    <h2>Magnitudo Gradien</h2>
+    <img src="/{{ magnitude }}" alt="Magnitudo Gradien" /><br /><br />
+
+    <h2>Pixel Data</h2>
+    <p>Pixel tengah dari gambar asli: {{ center_pixel_original }}</p>
+    <p>Pixel tengah setelah clustering: {{ center_pixel_clustered }}</p>
+  </body>
+</html>
