@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RESULT - KMEANS IMAGE CLUSTERING</title>
+    <link rel="icon" href="https://cdn.discordapp.com/attachments/1069951518637314048/1291613992887914557/logo.ico?ex=6700bcc4&is=66ff6b44&hm=727bb2e684f554a6ea3a03900c228d983310c14b107230373da5c83608efc069&">
+    <style>
+      /* General styles */
+      body {
+        font-family: 'Montserrat', sans-serif;
+        margin: 0;
+        padding: 20px;
+        background-image: url(https://cdn.discordapp.com/attachments/1069951518637314048/1291612338184781845/c9fa0604-d3a3-4b73-8b00-94d9e63cc55d.png?ex=6700bb3a&is=66ff69ba&hm=4be9d49693d213a3afce7503c07ca849c1b049062168595ffecea45e84063aae&);
+        background-size: cover;
+        background-position: center;
+        color: white;
+      }
+
+      h1, h2, h3, p {
+        color: white;
+      }
+
+      /* Glassmorphism card effect */
+      .glass-container {
+        backdrop-filter: blur(10px);
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        max-width: 1000px;
+        margin: 20px auto;
+      }
+
+      img {
+        margin: 10px;
+        border-radius: 10px;
+        object-fit: contain;
+        width: 100%; /* Ensure images take full width of the container */
+        height: auto;
+      }
+
+      .table-section {
+        display: grid;
+        grid-template-columns: 1fr 1fr; /* Ensure 2 columns in the grid */
+        gap: 20px; /* Space between grid items */
+      }
+
+      .table-section div {
+        backdrop-filter: blur(5px);
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 15px;
+        padding: 10px;
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        text-align: center;
+      }
+
+      .table-section h3 {
+        font-size: 1.1rem;
+        margin-bottom: 10px;
+      }
+
+      .table-section img {
+        border-radius: 10px;
+        max-height: 200px; /* Set consistent height for all images */
+        width: auto;
+        object-fit: cover;
+      }
+
+      .pixel-data {
+        grid-column: span 2; /* Pixel data will span the full width */
+        margin-top: 20px;
+        text-align: left;
+        padding: 10px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+      }
+
+      /* Media query for smaller screens */
+      @media (max-width: 768px) {
+        .glass-container {
+          padding: 15px;
+        }
+
+        h1 {
+          font-size: 1.5rem;
+        }
+
+        h2, h3 {
+          font-size: 1rem;
+        }
+
+        .table-section {
+          grid-template-columns: 1fr; /* Switch to 1 column */
+        }
+
+        .table-section div {
+          padding: 10px;
+        }
+
+        .table-section img {
+          max-height: 150px; /* Reduce image height on smaller screens */
+        }
+
+        .pixel-data {
+          padding: 10px;
+          font-size: 0.9rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="glass-container">
+      <h1>Clustering Result</h1>
+
+      <div class="table-section">
+        <div>
+          <h2>Original Image</h2>
+          <img src="/{{ original_image }}" alt="Original Image" />
+        </div>
+
+        <div>
+          <h2>Clustered Image</h2>
+          <img id="clustered_img" src="/{{ clustered_image }}" alt="Clustered Image" />
+        </div>
+
+        <div>
+          <h3>Gradien Arah Horizontal</h3>
+          <img id="horizontal_img" src="/{{ edge_x }}" alt="Gradien Arah Horizontal" />
+        </div>
+
+        <div>
+          <h3>Gradien Arah Vertikal</h3>
+          <img id="vertikal_img" src="/{{ edge_y }}" alt="Gradien Arah Vertikal" />
+        </div>
+
+        <div>
+          <h2>Magnitudo Gradien</h2>
+          <img id="magnitudo_img" src="/{{ magnitude }}" alt="Magnitudo Gradien" />
+        </div>
+
+        <div style="padding: 20px; border-radius: 15px; font-size: larger; backdrop-filter: blur(10px); box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); border: 1px solid rgba(255, 255, 255, 0.3); color: white;">
+          <h2>Kelompok Data Mining</h2>
+          <p><strong>Shaka Reyhan Saputra</strong> - 140810220081</p>
+          <p><strong>M. Aria Ardhana</strong> - 140810220041</p>
+          <p><strong>M. Is'Ad Prabaswara</strong> - 140810220065</p>
+        </div>
+        
+        
+
+        <div class="pixel-data">
+          <h2>Pixel Data</h2>
+          <p>Pixel tengah dari gambar asli: {{ center_pixel_original }}</p>
+          <p>Pixel tengah setelah clustering: {{ center_pixel_clustered }}</p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
