@@ -1,12 +1,13 @@
 import os
 import numpy as np
 from PIL import Image
-from flask import Flask, render_template, request, redirect, url_for, send_from_directory
+from flask import Flask, render_template, request
 
 app = Flask(__name__)
 UPLOAD_FOLDER = 'static/'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
+# Helper functions for K-Means
 def initialize_centroids(image, k):
     pixels = image.reshape(-1, 3)
     random_indices = np.random.choice(pixels.shape[0], k, replace=False)
@@ -35,33 +36,42 @@ def kmeans(image, k, max_iter=100, tol=1e-4):
         centroids = new_centroids
     return labels, centroids
 
-def apply_segmentation(image, labels, centroids):
-    segmented_image = centroids[labels].astype(np.uint8)
-    return segmented_image.reshape(image.shape)
+def save_cluster_images(image, labels, centroids, k, folder):
+    cluster_filenames = []
+    pixels = image.reshape(-1, 3)
+    
+    for i in range(k):
+        cluster_image = np.zeros_like(pixels)
+        cluster_image[labels == i] = pixels[labels == i]
+        clustered_img = cluster_image.reshape(image.shape)
+
+        filename = f'cluster_{i + 1}.png'
+        filepath = os.path.join(folder, filename)
+        Image.fromarray(clustered_img.astype(np.uint8)).save(filepath)
+        cluster_filenames.append(filename)
+
+    return cluster_filenames
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
-        max_clusters = int(request.form['max_clusters'])
-        uploaded_file = request.files['image']
+        k = int(request.form['k'])
+        uploaded_file = request.files['file']
+
         if uploaded_file.filename != '':
             filepath = os.path.join(app.config['UPLOAD_FOLDER'], uploaded_file.filename)
             uploaded_file.save(filepath)
 
-            # Load and process the uploaded image
+            # Load the image and process it
             image = np.array(Image.open(filepath))
-            segmented_images = []
+            labels, centroids = kmeans(image, k)
 
-            # Generate segmented images for each cluster from 1 to max_clusters
-            for k in range(1, max_clusters + 1):
-                labels, centroids = kmeans(image, k)
-                segmented_image = apply_segmentation(image, labels, centroids)
-                output_path = f'static/cluster_{k}.png'
-                Image.fromarray(segmented_image).save(output_path)
-                segmented_images.append(f'cluster_{k}.png')
+            # Save each cluster as a separate image
+            cluster_filenames = save_cluster_images(image, labels, centroids, k, app.config['UPLOAD_FOLDER'])
 
-            return render_template('index.html', segmented_images=segmented_images)
-
+            # Render the result page
+            return render_template('result.html', cluster_images=cluster_filenames)
+    
     return render_template('index.html')
 
 if __name__ == '__main__':
