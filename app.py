@@ -4,8 +4,16 @@ from PIL import Image
 from flask import Flask, render_template, request
 
 app = Flask(__name__)
-UPLOAD_FOLDER = 'static/'
+
+# Folder configurations
+UPLOAD_FOLDER = 'static/uploads'
+OUTPUT_FOLDER = 'static/output'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['OUTPUT_FOLDER'] = OUTPUT_FOLDER
+
+# Ensure necessary directories exist
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+os.makedirs(OUTPUT_FOLDER, exist_ok=True)
 
 # Helper functions for K-Means
 def initialize_centroids(image, k):
@@ -36,10 +44,10 @@ def kmeans(image, k, max_iter=100, tol=1e-4):
         centroids = new_centroids
     return labels, centroids
 
-def save_cluster_images(image, labels, centroids, k, folder):
+def save_cluster_images(image, labels, k, folder):
     cluster_filenames = []
     pixels = image.reshape(-1, 3)
-    
+
     for i in range(k):
         cluster_image = np.zeros_like(pixels)
         cluster_image[labels == i] = pixels[labels == i]
@@ -59,18 +67,21 @@ def index():
         uploaded_file = request.files['file']
 
         if uploaded_file.filename != '':
+            # Save uploaded image
             filepath = os.path.join(app.config['UPLOAD_FOLDER'], uploaded_file.filename)
             uploaded_file.save(filepath)
 
-            # Load the image and process it
+            # Load and process the image
             image = np.array(Image.open(filepath))
-            labels, centroids = kmeans(image, k)
+            labels, _ = kmeans(image, k)
 
-            # Save each cluster as a separate image
-            cluster_filenames = save_cluster_images(image, labels, centroids, k, app.config['UPLOAD_FOLDER'])
+            # Save each cluster image
+            cluster_filenames = save_cluster_images(image, labels, k, app.config['OUTPUT_FOLDER'])
 
-            # Render the result page
-            return render_template('result.html', cluster_images=cluster_filenames)
+            # Render the result page with original and clustered images
+            return render_template('result.html', 
+                                   original_image=f'uploads/{uploaded_file.filename}',
+                                   cluster_images=[f'output/{fname}' for fname in cluster_filenames])
     
     return render_template('index.html')
 
